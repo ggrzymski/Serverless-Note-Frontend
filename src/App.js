@@ -7,6 +7,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import {AppContext} from "./libs/contextLibs";
 import {Auth} from "aws-amplify";
 import { useHistory } from "react-router-dom";
+import { onError } from "./libs/errorLib";
 
 function App() {
   const [isAuthenticated, userHasAuthenticated] = useState(false);
@@ -23,7 +24,7 @@ function App() {
       userHasAuthenticated(true);
     } catch (e) {
       if (e !== 'No current user') {
-        alert(e);
+        onError(e);
       }
     }
     setIsAuthenticating(false);
