@@ -1,20 +1,42 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import "./App.css";
 import Routes from "./Routes";
 import Nav from "react-bootstrap/Nav";
 import {LinkContainer} from "react-router-bootstrap";
 import {AppContext} from "./libs/contextLibs";
+import {Auth} from "aws-amplify";
+import { useHistory } from "react-router-dom";
 
 function App() {
   const [isAuthenticated, userHasAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
+  const history = useHistory();
 
-  function handleLogout() {
+  useEffect(() =>{
+    onLoad();
+  }, []);
+
+  async function onLoad() {
+    try {
+      await Auth.currentSession();
+      userHasAuthenticated(true);
+    } catch (e) {
+      if (e !== 'No current user') {
+        alert(e);
+      }
+    }
+    setIsAuthenticating(false);
+  }
+
+  async function handleLogout() {
+    await Auth.signOut();
     userHasAuthenticated(false);
+    history.push("/login");
   }
 
   return (
-      <div className="App container py-3">
+      !isAuthenticating && <div className="App container py-3">
         <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
           <LinkContainer to="/">
             <Navbar.Brand className="font-weight-bold text-muted">
